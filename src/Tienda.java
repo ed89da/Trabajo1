@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +25,16 @@ public class Tienda {
     }
 
     public void comprarProducto(Producto producto, int cantidad) {
+        if (cantidad <= 0) {
+            System.out.println("La cantidad a comprar debe ser un número entero positivo.");
+            return;
+        }
+
+        if (producto.getPrecioUnidad() <= 0) {
+            System.out.println("El precio del producto debe ser positivo.");
+            return;
+        }
+
         double costoTotal = producto.getPrecioUnidad() * cantidad;
         int totalStockActual = productos.stream().mapToInt(Producto::getCantidadStock).sum();
 
@@ -38,16 +49,15 @@ public class Tienda {
         }
 
         // Verificar si el producto ya está en el stock
-        boolean productoExistente = false;
-        for (Producto p : productos) {
-            if (p.getIdentificador().equals(producto.getIdentificador())) {
-                p.setCantidadStock(p.getCantidadStock() + cantidad);
-                productoExistente = true;
-                break;
-            }
-        }
+        boolean productoExistente = productos.stream()
+                .anyMatch(p -> p.getIdentificador().equals(producto.getIdentificador()));
 
-        if (!productoExistente) {
+        if (productoExistente) {
+            productos.stream()
+                    .filter(p -> p.getIdentificador().equals(producto.getIdentificador()))
+                    .findFirst()
+                    .ifPresent(p -> p.setCantidadStock(p.getCantidadStock() + cantidad));
+        } else {
             producto.setCantidadStock(cantidad);
             productos.add(producto);
         }
