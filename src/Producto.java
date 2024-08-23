@@ -1,3 +1,4 @@
+
 public abstract class Producto {
     private String id;
     private String descripcion;
@@ -17,7 +18,7 @@ public abstract class Producto {
         this.porcentajeDescuento = 0;
     }
 
-    public String getId() {
+    public String getIdentificador() {
         return id;
     }
 
