@@ -1,4 +1,3 @@
-
 public abstract class Producto {
     private String id;
     private String descripcion;
@@ -7,6 +6,7 @@ public abstract class Producto {
     private double porcentajeGanancia;
     private boolean disponibleVenta;
     protected double porcentajeDescuento;
+    private double precioCosto;  // Atributo añadido
 
     public Producto(String id, String descripcion, int cantidadStock, double precioUnidad, double porcentajeGanancia, boolean disponibleVenta) {
         this.id = id;
@@ -16,6 +16,7 @@ public abstract class Producto {
         this.porcentajeGanancia = porcentajeGanancia;
         this.disponibleVenta = disponibleVenta;
         this.porcentajeDescuento = 0;
+        this.precioCosto = precioUnidad;  // Asignando el precioUnidad como precioCosto por defecto
     }
 
     public String getIdentificador() {
@@ -51,7 +52,7 @@ public abstract class Producto {
     }
 
     public double calcularPrecioVenta() {
-        return precioUnidad + (precioUnidad * porcentajeGanancia / 100);
+        return precioCosto + (precioCosto * porcentajeGanancia / 100);
     }
 
     public void aplicarDescuento(double porcentaje) {
@@ -68,5 +69,13 @@ public abstract class Producto {
 
     public double getPorcentajeDescuento() {
         return porcentajeDescuento;
+    }
+
+    public double getPrecioCosto() {  // Método añadido
+        return precioCosto;
+    }
+
+    public void setPrecioCosto(double precioCosto) {  // Método añadido
+        this.precioCosto = precioCosto;
     }
 }
