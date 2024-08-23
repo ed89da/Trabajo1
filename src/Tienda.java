@@ -15,6 +15,14 @@ public class Tienda {
         this.productos = new ArrayList<>();
     }
 
+    public String getNombre() {
+        return nombre;
+    }
+
+    public double getSaldoCaja() {
+        return saldoCaja;
+    }
+
     public void comprarProducto(Producto producto, int cantidad) {
         double costoTotal = producto.getPrecioUnidad() * cantidad;
         int totalStockActual = productos.stream().mapToInt(Producto::getCantidadStock).sum();
@@ -29,38 +37,53 @@ public class Tienda {
             return;
         }
 
-        producto.setCantidadStock(producto.getCantidadStock() + cantidad);
+        // Verificar si el producto ya está en el stock
+        boolean productoExistente = false;
+        for (Producto p : productos) {
+            if (p.getIdentificador().equals(producto.getIdentificador())) {
+                p.setCantidadStock(p.getCantidadStock() + cantidad);
+                productoExistente = true;
+                break;
+            }
+        }
+
+        if (!productoExistente) {
+            producto.setCantidadStock(cantidad);
+            productos.add(producto);
+        }
+
         saldoCaja -= costoTotal;
-        productos.add(producto);
         producto.setDisponibleVenta(true);
     }
 
     public void venderProductos(List<Producto> productosAVender, List<Integer> cantidades) {
         double totalVenta = 0;
+        StringBuilder detalleVenta = new StringBuilder();
 
         for (int i = 0; i < productosAVender.size(); i++) {
             Producto producto = productosAVender.get(i);
             int cantidad = cantidades.get(i);
 
             if (!producto.isDisponibleVenta()) {
-                System.out.println("El producto " + producto.getId() + " " + producto.getDescripcion() + " no se encuentra disponible.");
+                detalleVenta.append("El producto ").append(producto.getIdentificador()).append(" ").append(producto.getDescripcion()).append(" no se encuentra disponible.\n");
                 continue;
             }
 
             int cantidadVendida = Math.min(cantidad, producto.getCantidadStock());
             totalVenta += cantidadVendida * producto.calcularPrecioFinal();
 
-            System.out.println(producto.getId() + " " + producto.getDescripcion() + " " + cantidadVendida + " x " + producto.calcularPrecioFinal());
+            detalleVenta.append(producto.getIdentificador()).append(" ").append(producto.getDescripcion()).append(" ").append(cantidadVendida).append(" x ").append(producto.calcularPrecioFinal()).append("\n");
 
             producto.setCantidadStock(producto.getCantidadStock() - cantidadVendida);
 
             if (producto.getCantidadStock() == 0) {
                 producto.setDisponibleVenta(false);
-                System.out.println("Hay productos con stock disponible menor al solicitado.");
+                detalleVenta.append("Hay productos con stock disponible menor al solicitado.\n");
             }
         }
 
-        System.out.println("TOTAL VENTA: " + totalVenta);
+        detalleVenta.append("TOTAL VENTA: ").append(totalVenta);
+        System.out.println(detalleVenta);
         saldoCaja += totalVenta;
     }
 
